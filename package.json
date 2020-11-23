@@ -6,6 +6,7 @@
   "scripts": {
     "start": "npm-run-all -p dev-watch dev-server",
     "dev": "webpack --mode development",
+    "prod": "webpack --mode production",
     "dev-watch": "webpack-dev-server --mode development --watch"
   },
   "author": "",

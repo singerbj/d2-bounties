@@ -61,7 +61,7 @@ const App = () => {
             localStorage.setItem('code', code);
             if(window.location.search !== ""){
                 // window.location = window.location.origin;
-                window.history.pushState('d2-bounties', 'd2-bounties', window.location.origin);
+                window.history.pushState('d2-bounties', 'd2-bounties', window.location.origin + window.location.pathname);
             }
             
             (async () => {

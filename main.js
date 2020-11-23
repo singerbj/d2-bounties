@@ -32350,8 +32350,7 @@ var getData = /*#__PURE__*/function () {
                   });
                 }
               });
-            });
-            console.log(locationFilterMapGrouped); // build the list of bounty strings to debug classification of some bounties
+            }); // build the list of bounty strings to debug classification of some bounties
 
             bountyStrings = [];
             Object.keys(inventoryItemDefinition).forEach(function (itemId) {
@@ -32369,7 +32368,7 @@ var getData = /*#__PURE__*/function () {
               locationFilterMapGrouped: locationFilterMapGrouped
             });
 
-          case 32:
+          case 31:
           case "end":
             return _context6.stop();
         }

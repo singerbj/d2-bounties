@@ -146,8 +146,6 @@ export const getData = async () => {
         });
     });
 
-    console.log(locationFilterMapGrouped);
-
     // build the list of bounty strings to debug classification of some bounties
     const bountyStrings = [];
     Object.keys(inventoryItemDefinition).forEach((itemId) => {

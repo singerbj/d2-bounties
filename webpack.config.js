@@ -10,7 +10,7 @@ module.exports = {
         main: path.resolve(APP_DIR, 'index.js')
     },
     output: {
-        path: path.resolve(__dirname, 'dist/'),
+        path: path.resolve(__dirname, '.'),
         filename: isProd ? '[name].[contenthash].js' : '[name].js'
     },
     module: {        
@@ -28,7 +28,7 @@ module.exports = {
     },
     devtool: 'source-map',
     devServer: {
-        contentBase: path.join(__dirname, 'dist'),
+        contentBase: path.join(__dirname, '.'),
         compress: true,
         port: 9000,
         https: true
@@ -36,7 +36,7 @@ module.exports = {
     plugins: [
         new HtmlWebPackPlugin({
             filename: "./index.html",
-            template: 'index.html'
+            template: 'src/index.html'
         })
     ]
 };

@@ -1,6 +1,6 @@
 const DEFAULT_STATE = { loading: true };
-const BUNGIE_APP_ID = '34720';//'34694';
-const API_KEY = 'b2b60918af5f4f24affcea8f149ea424';//'8961c5b112cf48388a50dda77e6e1eee';
+const BUNGIE_APP_ID = '34694';
+const API_KEY = '8961c5b112cf48388a50dda77e6e1eee';
 const TOKEN_URL='https://www.bungie.net/Platform/App/OAuth/token/';
 const AUTHORIZE_URL=`https://www.bungie.net/en/OAuth/Authorize?client_id=${BUNGIE_APP_ID}&response_type=code`;
 

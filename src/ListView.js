@@ -22,27 +22,36 @@ const App = ({ logout }) => {
     }, []);
 
     const filter = (e) => {
-        if(state.filter === e.target.value){
-            setState({ ...state, filter: undefined });
-        } else {
-            setState({ ...state, filter: e.target.value });
-        }
+        setState({ ...state, filter: e.target.value });
     };
 
     let jsxArray = [];
     if(!state.loading){
         if(!state.filter){
-            jsxArray = state.bountiesOwned.map((bounty) => {
-                return (
-                    <>
-                        <BountyCard key={uuid()} bounty={bounty}></BountyCard>
-                        <hr />
-                    </>
-                );
+            [ ...LOCATIONS, ...ACTIVITIES ].forEach((LOCATION_KEY) => {
+                if(state.locationFilterMapGrouped[LOCATION_KEY]){
+                    const sortedLocationKeys = Object.keys(state.locationFilterMapGrouped[LOCATION_KEY]).sort((a, b) => {
+                        return state.locationFilterMapGrouped[LOCATION_KEY][b].length - state.locationFilterMapGrouped[LOCATION_KEY][a].length;
+                    });
+                    sortedLocationKeys.forEach((KEY) => {
+                        jsxArray.push(
+                            <h2 key={uuid()} style={{ background: "#ccc", color: "#333", padding: "0.25em" }}>
+                                {LOCATION_KEY.split('_').join(' ')}: {KEY.split('_').join(' ')} bounties
+                            </h2>
+                        );
+                        state.locationFilterMapGrouped[LOCATION_KEY][KEY].forEach((bounty) => {
+                            jsxArray.push(<BountyCard key={uuid()} bounty={bounty}></BountyCard>);
+                        })
+                        jsxArray.push(<hr key={uuid()} />);
+                    });
+                }
             });
         } else {
             if(state.locationFilterMapGrouped[state.filter]){
-                Object.keys(state.locationFilterMapGrouped[state.filter]).forEach((KEY) => {
+                const sortedLocationKeys = Object.keys(state.locationFilterMapGrouped[state.filter]).sort((a, b) => {
+                    return state.locationFilterMapGrouped[state.filter][b].length - state.locationFilterMapGrouped[state.filter][a].length;
+                });
+                sortedLocationKeys.forEach((KEY) => {
                     jsxArray.push(
                         <h2 key={uuid()} style={{ background: "#ccc", color: "#333", padding: "0.25em" }}>{
                             KEY.split('_').join(' ')} bounties
@@ -65,6 +74,7 @@ const App = ({ logout }) => {
                 <div>
                     <div style={{ margin: '1em' }}>
                         <div style={{ marginBottom: '1em' }}>
+                            <button key={uuid()} onClick={filter}>all</button>
                             { [ ...LOCATIONS, ...ACTIVITIES ].map((location) => {
                                 return (
                                     <button key={uuid()} value={location} onClick={filter}>{location.split('_').join(' ')}</button>

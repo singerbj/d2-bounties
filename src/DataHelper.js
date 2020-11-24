@@ -122,18 +122,21 @@ export const getData = async () => {
     });
 
     const locationFilterMapGrouped = {};
-    Object.keys(locationFilterMap).forEach((LOCATION_KEY) => {
+    // Object.keys(locationFilterMap).forEach((LOCATION_KEY) => {
+    [...LOCATIONS, ...ACTIVITIES].forEach((LOCATION_KEY) => {
         locationFilterMapGrouped[LOCATION_KEY] = {};
         [...WEAPONS, ...ELEMENTS, ...ENEMIES].forEach((KEY) => {
-            locationFilterMap[LOCATION_KEY].forEach((bounty) => {
-                if(bounty.relevantKeys.indexOf(KEY) >= 0){
-                    if(!locationFilterMapGrouped[LOCATION_KEY][KEY]){
-                        locationFilterMapGrouped[LOCATION_KEY][KEY] = [];
+            if(locationFilterMap[LOCATION_KEY]){
+                locationFilterMap[LOCATION_KEY].forEach((bounty) => {
+                    if(bounty.relevantKeys.indexOf(KEY) >= 0){
+                        if(!locationFilterMapGrouped[LOCATION_KEY][KEY]){
+                            locationFilterMapGrouped[LOCATION_KEY][KEY] = [];
+                        }
+                        locationFilterMapGrouped[LOCATION_KEY][KEY].push(bounty);
                     }
-                    locationFilterMapGrouped[LOCATION_KEY][KEY].push(bounty);
-                }
-            });
-            if(ACTIVITIES.indexOf(LOCATION_KEY) === -1){
+                });
+            }
+            if(LOCATIONS.indexOf(LOCATION_KEY) >= 0){
                 bountiesWithNoLocationOrLimit.forEach((bounty) => {
                     if(bounty.relevantKeys.indexOf(KEY) >= 0){
                         if(!locationFilterMapGrouped[LOCATION_KEY][KEY]){

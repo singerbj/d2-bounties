@@ -118,7 +118,7 @@ const App = () => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <BrowserRouter basename={window.location.pathname + "/#"}>
+            <BrowserRouter basename={window.location.pathname + "#"}>
                 <Route exact path="/filter/:filter">
                     {jsx}
                 </Route>

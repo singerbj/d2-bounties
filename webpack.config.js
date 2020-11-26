@@ -1,9 +1,6 @@
 const path = require('path');
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 
-
-
-
 module.exports = (env, argv) => {
     const isProd = argv.mode === 'production';
     const APP_DIR = path.resolve('./src');
@@ -40,7 +37,8 @@ module.exports = (env, argv) => {
         plugins: [
             new HtmlWebPackPlugin({
                 filename: "./index.html",
-                template: 'src/index.html'
+                template: 'src/index.html',
+                scriptLoading: 'defer'
             })
         ]
     };

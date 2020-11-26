@@ -41,15 +41,17 @@ const getCharacter = async (membershipType, destinyMembershipId, characterId) =>
     })
 };
 
-
-export const getData = async () => {
+export const getData = async (setLoadingProgress) => {
     const manifestRes = await getManifest();
+    setLoadingProgress(30);
     const membershipRes = await getMembershipInfo();
-
+    setLoadingProgress(50);
     const inventoryItemDefinitionRes = await getManifestMap(manifestRes.data.Response.jsonWorldComponentContentPaths.en.DestinyInventoryItemDefinition);
+    setLoadingProgress(70);
     const inventoryItemDefinition = inventoryItemDefinitionRes.data;
     const mostRecentMembership = membershipRes.data.Response.destinyMemberships[0];
     const profileRes = await getProfile(mostRecentMembership.membershipType, mostRecentMembership.membershipId);
+    setLoadingProgress(95);
     const firstCharacterId = Object.keys(profileRes.data.Response.characters.data)[0];
     const firstCharacter = await getCharacter(mostRecentMembership.membershipType, mostRecentMembership.membershipId, firstCharacterId);
 
@@ -99,6 +101,7 @@ export const getData = async () => {
                 description: itemDefinition.displayProperties.description,
                 icon: itemDefinition.displayProperties.icon,
                 itemType: itemDefinition.itemType,
+                stackUniqueLabel: itemDefinition.inventory.stackUniqueLabel,
                 location,
                 relevantKeys,
                 overallProgress
@@ -107,16 +110,16 @@ export const getData = async () => {
             // only include unfinished bounties
             if(overallProgress < 1){
                 bountiesOwned.push(bounty);
-            }
 
-            // build map for locations/activities
-            if(location){
-                if(!locationFilterMap[location]){
-                    locationFilterMap[location] = [];
+                // build map for locations/activities
+                if(location){
+                    if(!locationFilterMap[location]){
+                        locationFilterMap[location] = [];
+                    }
+                    locationFilterMap[location].push(bounty);
+                } else {
+                    bountiesWithNoLocationOrLimit.push(bounty);
                 }
-                locationFilterMap[location].push(bounty);
-            } else {
-                bountiesWithNoLocationOrLimit.push(bounty);
             }
         }
     });
@@ -148,16 +151,6 @@ export const getData = async () => {
             }
         });
     });
-
-    // build the list of bounty strings to debug classification of some bounties
-    const bountyStrings = [];
-    Object.keys(inventoryItemDefinition).forEach((itemId) => {
-        const item = inventoryItemDefinition[itemId];
-        // 12 is quest step, 26 is bounty
-        if([26].indexOf(item.itemType) >= 0){
-            bountyStrings.push(item.inventory.stackUniqueLabel);
-        }
-    });
-
-    return { bountiesOwned, bountyStrings, objectiveMap, locationFilterMap, locationFilterMapGrouped };
+    setLoadingProgress(1);
+    return { bountiesOwned, objectiveMap, locationFilterMap, locationFilterMapGrouped };
 }

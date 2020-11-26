@@ -9,7 +9,7 @@ const ACTIVITIES = ['raid', 'crucible', 'gambit', 'strike', 'patrol', 'lost_sect
 const WEAPONS = ['hand_cannon', 'sidearm', 'submachinegun', 'machinegun', 'auto_rifle', 'sniper_rifle', 
         'trace_rifle', 'bow', 'shotgun', 'sword', 'scout_rifle', 'pulse_rifle', 'grenade_launcher', 
         'rocket_launcher', { text: 'grenade', not: 'grenade_launcher'}, 'melee', 'abilities', 'super', 'precision', 'finisher'];
-const ELEMENTS = ['solar', 'arc', 'void', 'stasis']; // stasis?
+const ELEMENTS = ['elemental', 'solar', 'arc', 'void', 'stasis']; // stasis?
 const ENEMIES = ['fallen', 'scorn', 'cabal', 'hive', 'vex'];
 const ALL_KEYS = [...LOCATIONS, ...WEAPONS, ...ELEMENTS, ...ACTIVITIES, ...ENEMIES];
 

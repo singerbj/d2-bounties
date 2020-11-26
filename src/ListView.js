@@ -1,16 +1,36 @@
 import React, { useState, useEffect } from "react";
 import uuid from 'react-uuid';
+import capitalize from "capitalize";
 import { DEFAULT_STATE, BUNGIE_APP_ID, API_KEY, TOKEN_URL, AUTHORIZE_URL, LOCATIONS, ACTIVITIES, WEAPONS, ELEMENTS, ENEMIES, ALL_KEYS } from './Constants';
 import { getData } from "./DataHelper";
 import { BountyCard } from "./BountyCard";
+import { withRouter } from "react-router-dom";
+import { Button, Accordion, AccordionSummary, AccordionDetails, Typography, LinearProgress } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-const App = ({ logout }) => {
-    const [ state, setState ] = useState(DEFAULT_STATE);
+const useStyles = makeStyles((theme) => {
+    return {
+        button: {
+            marginRight: theme.spacing(),
+            marginBottom: theme.spacing()
+        },
+        details: {
+            padding: 0,
+            display: 'block'
+        }
+    };
+});
+
+const ListView = ({ logout, match, history }) => {
+    const classes = useStyles();
+    const [ state, setState ] = useState({ ...DEFAULT_STATE, filter: match.params.filter });
+    const [ loadingProgress, setLoadingProgress ] = useState(10);
 
     useEffect(() => {
         (async () => {
             try {
-                const data = await getData();
+                const data = await getData(setLoadingProgress);
                 setState({ ...state, ...data, loading: false });
             } catch (e) {
                 console.dir(e);
@@ -21,51 +41,53 @@ const App = ({ logout }) => {
         })();
     }, []);
 
-    const filter = (e) => {
-        setState({ ...state, filter: e.target.value });
+    const filter = (newFilter) => {
+        if(state.filter !== newFilter){
+            history.push(`/filter/${newFilter}`);
+            setState({ ...state, filter: newFilter });
+        }
     };
 
     let jsxArray = [];
+    let mostBounties = -1;
     if(!state.loading){
-        if(!state.filter){
-            [ ...LOCATIONS, ...ACTIVITIES ].forEach((LOCATION_KEY) => {
-                if(state.locationFilterMapGrouped[LOCATION_KEY]){
-                    const sortedLocationKeys = Object.keys(state.locationFilterMapGrouped[LOCATION_KEY]).sort((a, b) => {
-                        return state.locationFilterMapGrouped[LOCATION_KEY][b].length - state.locationFilterMapGrouped[LOCATION_KEY][a].length;
-                    });
-                    sortedLocationKeys.forEach((KEY) => {
-                        jsxArray.push(
-                            <h2 key={uuid()} style={{ background: "#ccc", color: "#333", padding: "0.25em" }}>
-                                {LOCATION_KEY.split('_').join(' ')}: {KEY.split('_').join(' ')} bounties
-                            </h2>
-                        );
-                        state.locationFilterMapGrouped[LOCATION_KEY][KEY].forEach((bounty) => {
-                            jsxArray.push(<BountyCard key={uuid()} bounty={bounty}></BountyCard>);
-                        })
-                        jsxArray.push(<hr key={uuid()} />);
-                    });
-                }
-            });
-        } else {
-            if(state.locationFilterMapGrouped[state.filter]){
-                const sortedLocationKeys = Object.keys(state.locationFilterMapGrouped[state.filter]).sort((a, b) => {
-                    return state.locationFilterMapGrouped[state.filter][b].length - state.locationFilterMapGrouped[state.filter][a].length;
+        const locationsToLoop = !state.filter || state.filter === 'all' ? [ ...LOCATIONS, ...ACTIVITIES ] : [state.filter];
+        locationsToLoop.forEach((LOCATION_KEY) => {
+            const locationObject = state.locationFilterMapGrouped[LOCATION_KEY];
+            if(locationObject && Object.keys(locationObject).length > 0){
+                const sortedLocationKeys = Object.keys(state.locationFilterMapGrouped[LOCATION_KEY]).sort((a, b) => {
+                    return state.locationFilterMapGrouped[LOCATION_KEY][b].length - state.locationFilterMapGrouped[LOCATION_KEY][a].length;
                 });
+                
                 sortedLocationKeys.forEach((KEY) => {
-                    jsxArray.push(
-                        <h2 key={uuid()} style={{ background: "#ccc", color: "#333", padding: "0.25em" }}>{
-                            KEY.split('_').join(' ')} bounties
-                        </h2>
+                    const list = state.locationFilterMapGrouped[LOCATION_KEY][KEY];
+                    const totalBounties = list.length;
+                    if(!jsxArray[totalBounties]){
+                        jsxArray[totalBounties] = [];
+                    }
+                    if(totalBounties > mostBounties){
+                        mostBounties = totalBounties;
+                    }
+                    jsxArray[totalBounties].push(
+                        <Accordion key={uuid()}>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                            >
+                                <Typography variant="h6">{capitalize.words(KEY.split('_').join(' ') + ' bounties') + ' in ' + capitalize.words(LOCATION_KEY.split('_').join(' ')) + ' (' + list.length + ')'}</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails className={classes.details}>
+                                { list.map((bounty) => {
+                                    return (
+                                        <BountyCard key={uuid()} bounty={bounty}></BountyCard>
+                                    );
+                                })}
+                            </AccordionDetails>
+                        </Accordion>
                     );
-                    state.locationFilterMapGrouped[state.filter][KEY].forEach((bounty) => {
-                        jsxArray.push(<BountyCard key={uuid()} bounty={bounty}></BountyCard>);
-                    })
-                    jsxArray.push(<hr key={uuid()} />);
+                    
                 });
-            } else {
-                jsxArray.push(<div key={uuid()}>No relevant bounties found for filter: {state.filter.split('_').join(' ')}</div>);
             }
-        }
+        });
     }
 
     return (
@@ -74,42 +96,29 @@ const App = ({ logout }) => {
                 <div>
                     <div style={{ margin: '1em' }}>
                         <div style={{ marginBottom: '1em' }}>
-                            <button key={uuid()} onClick={filter}>all</button>
-                            { [ ...LOCATIONS, ...ACTIVITIES ].map((location) => {
+                            { [ 'all', ...LOCATIONS, ...ACTIVITIES ].filter((location) => location === 'all' || Object.keys(state.locationFilterMapGrouped[location]).length > 0).map((location) => {
                                 return (
-                                    <button key={uuid()} value={location} onClick={filter}>{location.split('_').join(' ')}</button>
+                                    <Button 
+                                        key={uuid()} 
+                                        className={classes.button} 
+                                        variant={ state.filter === location ? "contained" : "outlined"} 
+                                        color="primary" 
+                                        onClick={() => filter(location)}>{location.split('_').join(' ')}
+                                    </Button>
                                 );
                             }) }
                         </div>
-                        <div>
-                            Current Filter: {state.filter ? state.filter.split('_').join(' ') : 'None'}
-                        </div>
                     </div>
                     <div style={{ margin: '1em' }}>
-                        { jsxArray }
-
-
-                        {/* <hr/>
-                        <hr/>
-                        <hr/>
-                        { state.bountyStrings && state.bountyStrings.map((bountyString) => {
-                            return (
-                                <div key={uuid()}>
-                                    {bountyString}
-                                    <hr/>
-                                </div>
-                            );
-                        })} */}
+                        { jsxArray.filter((jsx) => jsx !== undefined).reverse() }
                     </div>
                 </div>
             }
             { state.loading &&
-                <div>
-                    <div>Data Loading...</div>
-                </div>
+                <LinearProgress variant="determinate" value={loadingProgress} />
             }
         </>
     );
 };
 
-export default App;
+export default withRouter(ListView);

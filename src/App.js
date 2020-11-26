@@ -3,6 +3,12 @@ import axios from 'axios';
 import uuid from 'react-uuid';
 import { DEFAULT_STATE, BUNGIE_APP_ID, API_KEY, TOKEN_URL, AUTHORIZE_URL, LOCATIONS, ACTIVITIES, WEAPONS, ELEMENTS, ENEMIES, ALL_KEYS } from './Constants';
 import ListView from './ListView';
+import {
+    BrowserRouter,
+    Route,
+    Redirect
+} from "react-router-dom";
+import { Button, LinearProgress } from '@material-ui/core';
 
 const createFormParams = (params) => {
     return Object.keys(params)
@@ -26,6 +32,16 @@ const getToken = async () => {
     })
 };
 
+const urlParams = new URLSearchParams(window.location.search);
+let code = localStorage.getItem('code');
+if(!code){
+    code = urlParams.get('code');
+};
+if(window.location.search !== ""){
+    window.history.pushState('d2-bounties', 'd2-bounties', window.location.origin + window.location.pathname);
+}
+
+
 const App = () => {
     const [ state, setState ] = useState({ ...DEFAULT_STATE, loggedIn: false });
 
@@ -46,12 +62,6 @@ const App = () => {
     };
 
     useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        let code = localStorage.getItem('code');
-        if(!code){
-            code = urlParams.get('code');
-        };
-
         if(!code) {
             setState({
                 ...state,
@@ -59,10 +69,6 @@ const App = () => {
             });
         } else {
             localStorage.setItem('code', code);
-            if(window.location.search !== ""){
-                // window.location = window.location.origin;
-                window.history.pushState('d2-bounties', 'd2-bounties', window.location.origin + window.location.pathname);
-            }
             
             (async () => {
                 try {
@@ -89,15 +95,30 @@ const App = () => {
         }
     }, []);
 
-    if(state.loading ){
-        return <div>App Loading...</div>;
+    let jsx;
+    if(state.loading){
+        jsx = <LinearProgress variant="determinate" value={10}/>;
     } else {
         if (state.loggedIn) {
-            return <ListView logout={logout}></ListView>;
+            jsx = <ListView logout={logout}></ListView>;
         } else {
-            return <button onClick={() => { login(); }}>Please Log In</button>
+            jsx = <Button color="primary" onClick={() => login()}>Please Log In</Button>;
         }
     }
+
+    return (
+        <BrowserRouter basename="#">
+            <Route exact path="/filter/:filter">
+                {jsx}
+            </Route>
+            <Route exact path="/">
+                <Redirect to="/filter/all" />
+            </Route>
+            <Route exact path="/filter(/)">
+                <Redirect to="/filter/all" />
+            </Route>
+        </BrowserRouter>
+    );
 };
 
 export default App;

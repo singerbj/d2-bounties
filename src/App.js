@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
-import uuid from 'react-uuid';
 import { DEFAULT_STATE, BUNGIE_APP_ID, API_KEY, TOKEN_URL, AUTHORIZE_URL, LOCATIONS, ACTIVITIES, WEAPONS, ELEMENTS, ENEMIES, ALL_KEYS } from './Constants';
 import ListView from './ListView';
 import {
@@ -9,6 +8,8 @@ import {
     Redirect
 } from "react-router-dom";
 import { Button, LinearProgress } from '@material-ui/core';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 const createFormParams = (params) => {
     return Object.keys(params)
@@ -44,6 +45,14 @@ if(window.location.search !== ""){
 
 const App = () => {
     const [ state, setState ] = useState({ ...DEFAULT_STATE, loggedIn: false });
+
+    const theme = React.useMemo(() => {
+        return createMuiTheme({
+            palette: {
+                type: 'dark',
+            },
+        });
+    }, []);
 
     const login = () => { 
         // if(!localStorage.getItem('code') && !localStorage.getItem('access_token')){
@@ -107,17 +116,20 @@ const App = () => {
     }
 
     return (
-        <BrowserRouter basename="#">
-            <Route exact path="/filter/:filter">
-                {jsx}
-            </Route>
-            <Route exact path="/">
-                <Redirect to="/filter/all" />
-            </Route>
-            <Route exact path="/filter(/)">
-                <Redirect to="/filter/all" />
-            </Route>
-        </BrowserRouter>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <BrowserRouter basename="#">
+                <Route exact path="/filter/:filter">
+                    {jsx}
+                </Route>
+                <Route exact path="/">
+                    <Redirect to="/filter/all" />
+                </Route>
+                <Route exact path="/filter(/)">
+                    <Redirect to="/filter/all" />
+                </Route>
+            </BrowserRouter>
+        </ThemeProvider>
     );
 };
 

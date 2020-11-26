@@ -102,7 +102,7 @@ const ListView = ({ logout, match, history }) => {
                                         key={uuid()} 
                                         className={classes.button} 
                                         variant={ state.filter === location ? "contained" : "outlined"} 
-                                        color="primary" 
+                                        color={ state.filter === location ? "primary" : "secondary"} 
                                         onClick={() => filter(location)}>{location.split('_').join(' ')}
                                     </Button>
                                 );

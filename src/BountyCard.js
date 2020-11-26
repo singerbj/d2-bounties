@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import capitalize from "capitalize";
 
 const useStyles = makeStyles((theme) => {
-    console.log(theme);
     return {
         box: {
             padding: theme.spacing(),

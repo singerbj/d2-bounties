@@ -42,9 +42,7 @@ if(window.location.search !== ""){
     window.history.pushState('d2-bounties', 'd2-bounties', window.location.origin + window.location.pathname);
 }
 
-console.log('here1');
 const App = () => {
-    console.log('here2');
     const [ state, setState ] = useState({ ...DEFAULT_STATE, loggedIn: false });
 
     const theme = React.useMemo(() => {
@@ -56,9 +54,7 @@ const App = () => {
     }, []);
 
     const login = () => { 
-        // if(!localStorage.getItem('code') && !localStorage.getItem('access_token')){
-            window.location = AUTHORIZE_URL;
-        // }
+        window.location = AUTHORIZE_URL;
     };
 
     const logout = () => {
@@ -126,9 +122,7 @@ const App = () => {
                 <Route exact path="/">
                     <Redirect to="/filter/all" />
                 </Route>
-                <Route exact path="/filter(/)">
-                    <Redirect to="/filter/all" />
-                </Route>
+                <Redirect to='/' />
             </BrowserRouter>
         </ThemeProvider>
     );

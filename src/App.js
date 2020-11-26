@@ -108,21 +108,20 @@ const App = () => {
         if (state.loggedIn) {
             jsx = <ListView logout={logout}></ListView>;
         } else {
-            jsx = <Button color="primary" onClick={() => login()}>Please Log In</Button>;
+            jsx = <Button color="primary" variant="contained" onClick={() => login()}>Please Log In</Button>;
         }
-    }
+    }  
+
+    console.log((window.location.pathname !== '/' ? window.location.pathname : ''));
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <BrowserRouter basename={window.location.pathname + "#"}>
+            <BrowserRouter basename={(window.location.pathname !== '/' ? window.location.pathname : '') + "#"}>
                 <Route exact path="/filter/:filter">
                     {jsx}
                 </Route>
-                <Route exact path="/">
-                    <Redirect to="/filter/all" />
-                </Route>
-                <Redirect to='/' />
+                <Redirect to='/filter/all' />
             </BrowserRouter>
         </ThemeProvider>
     );

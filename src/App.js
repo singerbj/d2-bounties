@@ -42,8 +42,9 @@ if(window.location.search !== ""){
     window.history.pushState('d2-bounties', 'd2-bounties', window.location.origin + window.location.pathname);
 }
 
-
+console.log('here1');
 const App = () => {
+    console.log('here2');
     const [ state, setState ] = useState({ ...DEFAULT_STATE, loggedIn: false });
 
     const theme = React.useMemo(() => {

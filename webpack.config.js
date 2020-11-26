@@ -8,7 +8,7 @@ module.exports = (env, argv) => {
     return {
         mode: isProd ? 'production' : 'development',
         entry: {
-            main: path.resolve(APP_DIR, 'index.js')
+            mainEntry: path.resolve(APP_DIR, 'index.js')
         },
         output: {
             path: path.resolve(__dirname, '.'),

@@ -41,8 +41,14 @@ const useStyles = makeStyles((theme) => {
             height: 28,
             margin: theme.spacing()
         },
-        listContainer: {
-            margin: theme.spacing(2)
+        listOuterContainer: {
+            margin: theme.spacing(2),
+        },
+        listInnerContainer: {
+            width: '100%',
+            [theme.breakpoints.up('sm')]: {
+                maxWidth: 600
+            },
         },
         grid: {
             height: '75vh'
@@ -178,8 +184,14 @@ const ListView = ({ logout, match, history }) => {
                     </Select>
                     </Paper>
                 </Box>
-                <Box className={classes.listContainer}>
-                    { jsxArray.filter((jsx) => jsx !== undefined).reverse() }
+                <Box 
+                    className={classes.listOuterContainer}
+                    display="flex" 
+                    justifyContent="center"
+                >
+                    <Box className={classes.listInnerContainer}>
+                        { jsxArray.filter((jsx) => jsx !== undefined).reverse() }
+                    </Box>
                 </Box>
             </Box>
             { state.loading &&

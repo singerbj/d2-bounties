@@ -7,7 +7,7 @@ import {
     Route,
     Redirect
 } from "react-router-dom";
-import { Button, LinearProgress, Grid, Card, Typography } from '@material-ui/core';
+import { Button, LinearProgress, Grid, Paper, Typography } from '@material-ui/core';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => {
         grid: {
             height: '100vh'
         },
-        card: {
+        paper: {
             width: '37em',
             padding: theme.spacing(4),
             margin: theme.spacing(2),
@@ -138,11 +138,11 @@ const App = () => {
                         className={classes.grid}
                     >
                         <Grid item>
-                            <Card className={classes.card}>
+                            <Paper className={classes.paper}>
                                 <Typography variant="h2">d2-bounties</Typography>
                                 <Button className={classes.button} size="large" color="primary" variant="contained" onClick={() => login()}>Login</Button>
                                 <Typography variant="body2">d2-bounties requires you securely authenticate with Bungie.net every 30 minutes</Typography>
-                            </Card>
+                            </Paper>
                         </Grid>
                     </Grid>
                 )

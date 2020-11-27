@@ -7,15 +7,12 @@ import {
     Route,
     Redirect
 } from "react-router-dom";
-import { Button, LinearProgress } from '@material-ui/core';
+import { Button, LinearProgress, Grid, Card, Typography } from '@material-ui/core';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { makeStyles } from '@material-ui/core/styles';
 
-const createFormParams = (params) => {
-    return Object.keys(params)
-        .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
-        .join('&')
-};
+const createFormParams = (params) => Object.keys(params).map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`).join('&');
 
 const getToken = async () => {
     return await axios({
@@ -42,11 +39,34 @@ if(window.location.search !== ""){
     window.history.pushState('d2-bounties', 'd2-bounties', window.location.origin + window.location.pathname);
 }
 
+const useStyles = makeStyles((theme) => {
+    return {
+        grid: {
+            height: '100vh'
+        },
+        card: {
+            width: '37em',
+            padding: theme.spacing(4),
+            margin: theme.spacing(2),
+            [theme.breakpoints.down('xs')]: {
+                width: `calc(100% - ${theme.spacing(4)}px)`,
+            },
+        },
+        button: {
+            margin: theme.spacing(4)
+        }
+    };
+});
+
 const App = () => {
+    const classes = useStyles();
     const [ state, setState ] = useState({ ...DEFAULT_STATE, loggedIn: false });
 
     const theme = React.useMemo(() => {
         return createMuiTheme({
+            shape: {
+                borderRadius: 10,
+            }, 
             palette: {
                 type: 'dark',
             },
@@ -101,25 +121,41 @@ const App = () => {
         }
     }, []);
 
-    let jsx;
-    if(state.loading){
-        jsx = <LinearProgress variant="determinate" value={10}/>;
-    } else {
-        if (state.loggedIn) {
-            jsx = <ListView logout={logout}></ListView>;
+    const getContentJsx = () => {
+        if(state.loading){
+            return <LinearProgress variant="determinate" value={10}/>;
         } else {
-            jsx = <Button color="primary" variant="contained" onClick={() => login()}>Please Log In</Button>;
-        }
-    }  
-
-    console.log((window.location.pathname !== '/' ? window.location.pathname : ''));
+            if (state.loggedIn) {
+                return <ListView logout={logout}></ListView>;
+            } else {
+                return (
+                    <Grid
+                        container
+                        spacing={0}
+                        align="center"
+                        justify="center"
+                        direction="column"
+                        className={classes.grid}
+                    >
+                        <Grid item>
+                            <Card className={classes.card}>
+                                <Typography variant="h2">d2-bounties</Typography>
+                                <Button className={classes.button} size="large" color="primary" variant="contained" onClick={() => login()}>Login</Button>
+                                <Typography variant="body2">d2-bounties requires you securely authenticate with Bungie.net every 30 minutes</Typography>
+                            </Card>
+                        </Grid>
+                    </Grid>
+                )
+            }
+        }  
+    };
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <BrowserRouter basename={(window.location.pathname !== '/' ? window.location.pathname : '') + "#"}>
                 <Route exact path="/filter/:filter">
-                    {jsx}
+                    { getContentJsx() }
                 </Route>
                 <Redirect to='/filter/all' />
             </BrowserRouter>

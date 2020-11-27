@@ -41,12 +41,23 @@ const getCharacter = async (membershipType, destinyMembershipId, characterId) =>
     })
 };
 
-export const getData = async (setLoadingProgress) => {
-    const manifestRes = await getManifest();
+let manifestRes;
+let membershipRes;
+let inventoryItemDefinitionRes;
+
+export const getData = async (setLoadingProgress, isOnPageRefresh) => {
+    if(!manifestRes || !isOnPageRefresh){
+        manifestRes = await getManifest();
+    }
     setLoadingProgress(30);
-    const membershipRes = await getMembershipInfo();
+    if(!membershipRes || !isOnPageRefresh){
+        membershipRes = await getMembershipInfo();
+
+    }
     setLoadingProgress(50);
-    const inventoryItemDefinitionRes = await getManifestMap(manifestRes.data.Response.jsonWorldComponentContentPaths.en.DestinyInventoryItemDefinition);
+    if(!inventoryItemDefinitionRes || !isOnPageRefresh){
+        inventoryItemDefinitionRes = await getManifestMap(manifestRes.data.Response.jsonWorldComponentContentPaths.en.DestinyInventoryItemDefinition);
+    }
     setLoadingProgress(70);
     const inventoryItemDefinition = inventoryItemDefinitionRes.data;
     const mostRecentMembership = membershipRes.data.Response.destinyMemberships[0];

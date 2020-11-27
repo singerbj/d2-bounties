@@ -5,19 +5,52 @@ import { DEFAULT_STATE, BUNGIE_APP_ID, API_KEY, TOKEN_URL, AUTHORIZE_URL, LOCATI
 import { getData } from "./DataHelper";
 import { BountyCard } from "./BountyCard";
 import { withRouter } from "react-router-dom";
-import { Button, Accordion, AccordionSummary, AccordionDetails, Typography, LinearProgress } from '@material-ui/core';
+import { Paper, IconButton, Accordion, AccordionSummary, AccordionDetails, Typography, LinearProgress, Select, MenuItem, Box, Divider, Grid } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 const useStyles = makeStyles((theme) => {
     return {
-        button: {
-            marginRight: theme.spacing(),
-            marginBottom: theme.spacing()
-        },
         details: {
             padding: 0,
             display: 'block'
+        },
+        controls: {
+            margin: theme.spacing(2)
+        },
+        controlPaper: {
+            padding: `${theme.spacing()}px ${theme.spacing()}px`,
+            display: "flex",
+            alignItems: "center",
+            width: '100%',
+            [theme.breakpoints.up('sm')]: {
+                maxWidth: 400
+            },
+        },
+        input: {
+            marginLeft: theme.spacing(),
+            marginRight: theme.spacing(),
+            flex: 1
+        },
+        iconButton: {
+            padding: theme.spacing()
+        },
+        divider: {
+            height: 28,
+            margin: theme.spacing()
+        },
+        listContainer: {
+            margin: theme.spacing(2)
+        },
+        grid: {
+            height: '75vh'
+        },
+        summaryBox: { 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            width: '100%' 
         }
     };
 });
@@ -27,18 +60,21 @@ const ListView = ({ logout, match, history }) => {
     const [ state, setState ] = useState({ ...DEFAULT_STATE, filter: match.params.filter });
     const [ loadingProgress, setLoadingProgress ] = useState(10);
 
-    useEffect(() => {
-        (async () => {
-            try {
-                const data = await getData(setLoadingProgress);
-                setState({ ...state, ...data, loading: false });
-            } catch (e) {
-                console.dir(e);
-                if(e.response && e.response.status == 401){
-                    logout();
-                }
+    const refresh = async (isOnPageRefresh) => {
+        setState({ ...state, loading: true });
+        try {
+            const data = await getData(setLoadingProgress, isOnPageRefresh);
+            setState({ ...state, ...data, loading: false });
+        } catch (e) {
+            console.dir(e);
+            if(e.response && e.response.status == 401){
+                logout();
             }
-        })();
+        }
+    };
+
+    useEffect(() => {
+        refresh();
     }, []);
 
     const filter = (newFilter) => {
@@ -69,11 +105,23 @@ const ListView = ({ logout, match, history }) => {
                         mostBounties = totalBounties;
                     }
                     jsxArray[totalBounties].push(
-                        <Accordion key={uuid()}>
+                        <Accordion key={uuid()} TransitionProps={{ unmountOnExit: true }}>
                             <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
                             >
-                                <Typography variant="h6">{capitalize.words(KEY.split('_').join(' ') + ' bounties') + ' in ' + capitalize.words(LOCATION_KEY.split('_').join(' ')) + ' (' + list.length + ')'}</Typography>
+                                <Box className={classes.summaryBox}>
+                                    <Box>
+                                        <Typography variant="h6">{capitalize.words(KEY.split('_').join(' ') + ' bounties')}</Typography>
+                                        <Typography variant="body2">{' in ' + capitalize.words(LOCATION_KEY.split('_').join(' '))}</Typography>
+                                    </Box>
+                                    <Box
+                                        display="flex" 
+                                        alignItems="center"
+                                    >
+                                        <Typography variant="h5">{list.length}</Typography>
+                                    </Box>
+                                </Box>
+
                             </AccordionSummary>
                             <AccordionDetails className={classes.details}>
                                 { list.map((bounty) => {
@@ -92,30 +140,64 @@ const ListView = ({ logout, match, history }) => {
 
     return (
         <>
-            { !state.loading && 
-                <div>
-                    <div style={{ margin: '1em' }}>
-                        <div style={{ marginBottom: '1em' }}>
-                            { [ 'all', ...LOCATIONS, ...ACTIVITIES ].filter((location) => location === 'all' || Object.keys(state.locationFilterMapGrouped[location]).length > 0).map((location) => {
+            <Box>
+                <Box 
+                    className={classes.controls} 
+                    display="flex" 
+                    alignItems="center"
+                    justifyContent="center"
+                >
+                    <Paper component="form" className={classes.controlPaper}>
+                        <IconButton 
+                            key={uuid()} 
+                            className={classes.iconButton} 
+                            onClick={() => refresh(true)}
+                            disabled={state.loading}
+                        >
+                            <RefreshIcon />
+                        </IconButton>
+                        <Divider className={classes.divider} orientation="vertical" />
+                        <Select
+                            value={state.filter}
+                            onChange={(e) => filter(e.target.value)}
+                            disabled={state.loading}
+                            className={classes.input}
+                        >
+                            { state.locationFilterMapGrouped && [ 'all', ...LOCATIONS, ...ACTIVITIES ].filter((location) => {
+                                return location === 'all' || Object.keys(state.locationFilterMapGrouped[location]).length > 0;
+                            }).map((location) => {
                                 return (
-                                    <Button 
+                                    <MenuItem 
                                         key={uuid()} 
-                                        className={classes.button} 
-                                        variant={ state.filter === location ? "contained" : "outlined"} 
-                                        color={ state.filter === location ? "primary" : "secondary"} 
-                                        onClick={() => filter(location)}>{location.split('_').join(' ')}
-                                    </Button>
+                                        value={location}
+                                    >
+                                        {capitalize.words(location.split('_').join(' '))}
+                                    </MenuItem>
                                 );
                             }) }
-                        </div>
-                    </div>
-                    <div style={{ margin: '1em' }}>
-                        { jsxArray.filter((jsx) => jsx !== undefined).reverse() }
-                    </div>
-                </div>
-            }
+                    </Select>
+                    </Paper>
+                </Box>
+                <Box className={classes.listContainer}>
+                    { jsxArray.filter((jsx) => jsx !== undefined).reverse() }
+                </Box>
+            </Box>
             { state.loading &&
-                <LinearProgress variant="determinate" value={loadingProgress} />
+                <>
+                    <LinearProgress variant="determinate" value={loadingProgress} />
+                    <Grid
+                        container
+                        spacing={0}
+                        align="center"
+                        justify="center"
+                        direction="column"
+                        className={classes.grid}
+                    >
+                        <Grid item>
+                            <Typography variant="h5">Loading...</Typography>
+                        </Grid>
+                    </Grid>
+                </>
             }
         </>
     );

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import uuid from 'react-uuid';
 import capitalize from "capitalize";
-import { DEFAULT_STATE, BUNGIE_APP_ID, API_KEY, TOKEN_URL, AUTHORIZE_URL, LOCATIONS, ACTIVITIES, WEAPONS, ELEMENTS, ENEMIES, ALL_KEYS, MAX_LIST_LENGTH} from './Constants';
+import { LOCALE, WHERE, DEFAULT_STATE, BUNGIE_APP_ID, API_KEY, TOKEN_URL, AUTHORIZE_URL, LOCATIONS, ACTIVITIES, WEAPONS, ELEMENTS, ENEMIES, ALL_KEYS, MAX_LIST_LENGTH, MAX_ALL_LENGTH} from './Constants';
 import { getData } from "./DataHelper";
 import { BountyCard } from "./BountyCard";
 import { withRouter } from "react-router-dom";
@@ -64,13 +64,13 @@ const useStyles = makeStyles((theme) => {
     };
 });
 
-const filterOptions = [ ...LOCATIONS, ...ACTIVITIES ];
+const filterOptions = [ 'all', ...LOCATIONS, ...ACTIVITIES ];
 
 const ListView = ({ logout, match, history }) => {
     const classes = useStyles();
     const [ state, setState ] = useState({ 
         ...DEFAULT_STATE, 
-        filter: filterOptions.indexOf(match.params.filter) > -1 ? match.params.filter : 'crucible'
+        filter: filterOptions.indexOf(match.params.filter) > -1 ? match.params.filter : 'all'
     });
     const [ loadingProgress, setLoadingProgress ] = useState(10);
 
@@ -96,7 +96,7 @@ const ListView = ({ logout, match, history }) => {
 
     useEffect(() => {
         if(filterOptions.indexOf(match.params.filter) === -1){
-            history.push(`/crucible`);
+            history.push(`/all`);
         }
         refresh();
     }, []);
@@ -104,7 +104,7 @@ const ListView = ({ logout, match, history }) => {
     let jsxArray = [];
     let mostBounties = -1;
     if(!state.loading){
-        const locationsToLoop = !state.filter ? [ ...LOCATIONS, ...ACTIVITIES ] : [state.filter];
+        const locationsToLoop = !state.filter || state.filter === 'all' ? [ ...LOCATIONS, ...ACTIVITIES ] : [state.filter];
         locationsToLoop.forEach((LOCATION_KEY) => {
             const locationObject = state.detailedMapLocationsActivities[LOCATION_KEY];
             if(locationObject && Object.keys(locationObject).length > 0){
@@ -112,7 +112,7 @@ const ListView = ({ logout, match, history }) => {
                     return state.detailedMapLocationsActivities[LOCATION_KEY][b].length - state.detailedMapLocationsActivities[LOCATION_KEY][a].length;
                 });
                 
-                sortedLocationKeys.slice(0, MAX_LIST_LENGTH).forEach((KEY) => {
+                sortedLocationKeys.slice(0, state.filter === 'all' ? MAX_ALL_LENGTH : MAX_LIST_LENGTH).forEach((KEY) => {
                     const list = state.detailedMapLocationsActivities[LOCATION_KEY][KEY];
                     const totalBounties = list.length;
                     if(!jsxArray[totalBounties]){
@@ -129,7 +129,7 @@ const ListView = ({ logout, match, history }) => {
                                 <Box className={classes.summaryBox}>
                                     <Box>
                                         <Typography variant="h6">{capitalize.words(KEY.split('_').join(' ').split('~').join(' ') + ' bounties')}</Typography>
-                                        <Typography variant="body2">{' in ' + capitalize.words(LOCATION_KEY.split('_').join(' '))}</Typography>
+                                        <Typography variant="body2">{WHERE[LOCATION_KEY]}</Typography>
                                     </Box>
                                     <Box
                                         display="flex" 
@@ -181,14 +181,14 @@ const ListView = ({ logout, match, history }) => {
                             className={classes.input}
                         >
                             { state.detailedMapLocationsActivities && filterOptions.filter((location) => {
-                                return state.detailedMapLocationsActivities[location] && Object.keys(state.detailedMapLocationsActivities[location]).length > 0;
-                            }).map((location) => {
+                                return location === 'all' || (state.detailedMapLocationsActivities[location] && Object.keys(state.detailedMapLocationsActivities[location]).length > 0);
+                            }).sort().map((location) => {
                                 return (
                                     <MenuItem 
                                         key={uuid()} 
                                         value={location}
                                     >
-                                        {capitalize.words(location.split('_').join(' '))}
+                                        {LOCALE[location]}
                                     </MenuItem>
                                 );
                             }) }

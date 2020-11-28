@@ -57,6 +57,9 @@ const useStyles = makeStyles((theme) => {
             display: 'flex', 
             justifyContent: 'space-between',
             width: '100%' 
+        },
+        numberOfBounties: {
+            marginLeft: theme.spacing()
         }
     };
 });
@@ -131,6 +134,7 @@ const ListView = ({ logout, match, history }) => {
                                     <Box
                                         display="flex" 
                                         alignItems="center"
+                                        className={classes.numberOfBounties}
                                     >
                                         <Typography variant="h5">{list.length}</Typography>
                                     </Box>
@@ -177,7 +181,6 @@ const ListView = ({ logout, match, history }) => {
                             className={classes.input}
                         >
                             { state.detailedMapLocationsActivities && filterOptions.filter((location) => {
-                                console.log(state.detailedMapLocationsActivities[location]);
                                 return Object.keys(state.detailedMapLocationsActivities[location]).length > 0;
                             }).map((location) => {
                                 return (

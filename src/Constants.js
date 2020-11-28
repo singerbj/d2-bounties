@@ -6,12 +6,18 @@ const AUTHORIZE_URL=`https://www.bungie.net/en/OAuth/Authorize?client_id=${BUNGI
 
 const LOCATIONS = ['edz', 'luna', 'europa', 'dreaming_city', 'cosmodrome', 'nessus', 'tangled_shore'];
 const ACTIVITIES = ['raid', 'crucible', 'gambit', 'strike', 'patrol', 'lost_sector'];
+const PVP_ONLY_ACTIVITIES = ['crucible'];
 const WEAPONS = ['hand_cannon', 'sidearm', 'submachinegun', 'machinegun', 'auto_rifle', 'sniper_rifle', 
         'trace_rifle', 'bow', 'shotgun', 'sword', 'scout_rifle', 'pulse_rifle', 'grenade_launcher', 
-        'rocket_launcher', { text: 'grenade', not: 'grenade_launcher'}, 'melee', 'abilities', 'super', 'precision', 'finisher'];
-const ELEMENTS = ['elemental', 'solar', 'arc', 'void', 'stasis']; // stasis?
+        'rocket_launcher', { text: 'grenade', not: 'grenade_launcher'}, 'melee', 'abilities', 'super', 
+        'precision', 'finisher'
+];
+const ALL_ELEMENTAL = ['elemental'];
+const ELEMENTS = ['solar', 'arc', 'void', 'stasis']; // stasis?
 const ENEMIES = ['fallen', 'scorn', 'cabal', 'hive', 'vex'];
-const ALL_KEYS = [...LOCATIONS, ...WEAPONS, ...ELEMENTS, ...ACTIVITIES, ...ENEMIES];
+const ALL_KEYS = [...LOCATIONS, ...WEAPONS, ...ALL_ELEMENTAL, ...ELEMENTS, ...ACTIVITIES, ...ENEMIES];
+
+const MAX_LIST_LENGTH = 30;
 
 export {
     DEFAULT_STATE,
@@ -21,8 +27,11 @@ export {
     AUTHORIZE_URL,
     LOCATIONS,
     ACTIVITIES,
+    PVP_ONLY_ACTIVITIES,
     WEAPONS,
+    ALL_ELEMENTAL,
     ELEMENTS,
     ENEMIES,
-    ALL_KEYS
-}
+    ALL_KEYS,
+    MAX_LIST_LENGTH
+};

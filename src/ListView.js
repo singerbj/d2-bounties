@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import uuid from 'react-uuid';
 import capitalize from "capitalize";
-import { DEFAULT_STATE, BUNGIE_APP_ID, API_KEY, TOKEN_URL, AUTHORIZE_URL, LOCATIONS, ACTIVITIES, WEAPONS, ELEMENTS, ENEMIES, ALL_KEYS } from './Constants';
+import { DEFAULT_STATE, BUNGIE_APP_ID, API_KEY, TOKEN_URL, AUTHORIZE_URL, LOCATIONS, ACTIVITIES, WEAPONS, ELEMENTS, ENEMIES, ALL_KEYS, MAX_LIST_LENGTH} from './Constants';
 import { getData } from "./DataHelper";
 import { BountyCard } from "./BountyCard";
 import { withRouter } from "react-router-dom";
@@ -61,13 +61,13 @@ const useStyles = makeStyles((theme) => {
     };
 });
 
-const filterOptions = [ 'all', ...LOCATIONS, ...ACTIVITIES ];
+const filterOptions = [ ...LOCATIONS, ...ACTIVITIES ];
 
 const ListView = ({ logout, match, history }) => {
     const classes = useStyles();
     const [ state, setState ] = useState({ 
         ...DEFAULT_STATE, 
-        filter: filterOptions.indexOf(match.params.filter) > -1 ? match.params.filter : 'all'
+        filter: filterOptions.indexOf(match.params.filter) > -1 ? match.params.filter : 'crucible'
     });
     const [ loadingProgress, setLoadingProgress ] = useState(10);
 
@@ -93,7 +93,7 @@ const ListView = ({ logout, match, history }) => {
 
     useEffect(() => {
         if(filterOptions.indexOf(match.params.filter) === -1){
-            history.push(`/all`);
+            history.push(`/crucible`);
         }
         refresh();
     }, []);
@@ -101,16 +101,16 @@ const ListView = ({ logout, match, history }) => {
     let jsxArray = [];
     let mostBounties = -1;
     if(!state.loading){
-        const locationsToLoop = !state.filter || state.filter === 'all' ? [ ...LOCATIONS, ...ACTIVITIES ] : [state.filter];
+        const locationsToLoop = !state.filter ? [ ...LOCATIONS, ...ACTIVITIES ] : [state.filter];
         locationsToLoop.forEach((LOCATION_KEY) => {
-            const locationObject = state.locationFilterMapGrouped[LOCATION_KEY];
+            const locationObject = state.detailedMapLocationsActivities[LOCATION_KEY];
             if(locationObject && Object.keys(locationObject).length > 0){
-                const sortedLocationKeys = Object.keys(state.locationFilterMapGrouped[LOCATION_KEY]).sort((a, b) => {
-                    return state.locationFilterMapGrouped[LOCATION_KEY][b].length - state.locationFilterMapGrouped[LOCATION_KEY][a].length;
+                const sortedLocationKeys = Object.keys(state.detailedMapLocationsActivities[LOCATION_KEY]).sort((a, b) => {
+                    return state.detailedMapLocationsActivities[LOCATION_KEY][b].length - state.detailedMapLocationsActivities[LOCATION_KEY][a].length;
                 });
                 
-                sortedLocationKeys.forEach((KEY) => {
-                    const list = state.locationFilterMapGrouped[LOCATION_KEY][KEY];
+                sortedLocationKeys.slice(0, MAX_LIST_LENGTH).forEach((KEY) => {
+                    const list = state.detailedMapLocationsActivities[LOCATION_KEY][KEY];
                     const totalBounties = list.length;
                     if(!jsxArray[totalBounties]){
                         jsxArray[totalBounties] = [];
@@ -125,7 +125,7 @@ const ListView = ({ logout, match, history }) => {
                             >
                                 <Box className={classes.summaryBox}>
                                     <Box>
-                                        <Typography variant="h6">{capitalize.words(KEY.split('_').join(' ') + ' bounties')}</Typography>
+                                        <Typography variant="h6">{capitalize.words(KEY.split('_').join(' ').split('~').join(' ') + ' bounties')}</Typography>
                                         <Typography variant="body2">{' in ' + capitalize.words(LOCATION_KEY.split('_').join(' '))}</Typography>
                                     </Box>
                                     <Box
@@ -176,8 +176,9 @@ const ListView = ({ logout, match, history }) => {
                             disabled={state.loading}
                             className={classes.input}
                         >
-                            { state.locationFilterMapGrouped && filterOptions.filter((location) => {
-                                return location === 'all' || Object.keys(state.locationFilterMapGrouped[location]).length > 0;
+                            { state.detailedMapLocationsActivities && filterOptions.filter((location) => {
+                                console.log(state.detailedMapLocationsActivities[location]);
+                                return Object.keys(state.detailedMapLocationsActivities[location]).length > 0;
                             }).map((location) => {
                                 return (
                                     <MenuItem 

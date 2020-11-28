@@ -1,5 +1,4 @@
 const VERSION = '0.1.0';
-console.log("d2-bounties version: " + VERSION);
 
 const DEFAULT_STATE = { loading: true };
 const BUNGIE_APP_ID = '34694';
@@ -23,6 +22,7 @@ const ALL_KEYS = [...LOCATIONS, ...WEAPONS, ...ALL_ELEMENTAL, ...ELEMENTS, ...AC
 const MAX_LIST_LENGTH = 30;
 
 export {
+    VERSION,
     DEFAULT_STATE,
     BUNGIE_APP_ID,
     API_KEY,

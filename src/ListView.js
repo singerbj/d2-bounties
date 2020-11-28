@@ -181,7 +181,7 @@ const ListView = ({ logout, match, history }) => {
                             className={classes.input}
                         >
                             { state.detailedMapLocationsActivities && filterOptions.filter((location) => {
-                                return Object.keys(state.detailedMapLocationsActivities[location]).length > 0;
+                                return state.detailedMapLocationsActivities[location] && Object.keys(state.detailedMapLocationsActivities[location]).length > 0;
                             }).map((location) => {
                                 return (
                                     <MenuItem 

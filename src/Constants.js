@@ -1,3 +1,6 @@
+const VERSION = '0.1.0';
+console.log("d2-bounties version: " + VERSION);
+
 const DEFAULT_STATE = { loading: true };
 const BUNGIE_APP_ID = '34694';
 const API_KEY = '8961c5b112cf48388a50dda77e6e1eee';

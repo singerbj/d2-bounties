@@ -61,9 +61,14 @@ const useStyles = makeStyles((theme) => {
     };
 });
 
+const filterOptions = [ 'all', ...LOCATIONS, ...ACTIVITIES ];
+
 const ListView = ({ logout, match, history }) => {
     const classes = useStyles();
-    const [ state, setState ] = useState({ ...DEFAULT_STATE, filter: match.params.filter });
+    const [ state, setState ] = useState({ 
+        ...DEFAULT_STATE, 
+        filter: filterOptions.indexOf(match.params.filter) > -1 ? match.params.filter : 'all'
+    });
     const [ loadingProgress, setLoadingProgress ] = useState(10);
 
     const refresh = async (isOnPageRefresh) => {
@@ -79,16 +84,19 @@ const ListView = ({ logout, match, history }) => {
         }
     };
 
-    useEffect(() => {
-        refresh();
-    }, []);
-
     const filter = (newFilter) => {
         if(state.filter !== newFilter){
-            history.push(`/filter/${newFilter}`);
+            history.push(`/${newFilter}`);
             setState({ ...state, filter: newFilter });
         }
     };
+
+    useEffect(() => {
+        if(filterOptions.indexOf(match.params.filter) === -1){
+            history.push(`/all`);
+        }
+        refresh();
+    }, []);
 
     let jsxArray = [];
     let mostBounties = -1;
@@ -127,7 +135,6 @@ const ListView = ({ logout, match, history }) => {
                                         <Typography variant="h5">{list.length}</Typography>
                                     </Box>
                                 </Box>
-
                             </AccordionSummary>
                             <AccordionDetails className={classes.details}>
                                 { list.map((bounty) => {
@@ -164,12 +171,12 @@ const ListView = ({ logout, match, history }) => {
                         </IconButton>
                         <Divider className={classes.divider} orientation="vertical" />
                         <Select
-                            value={state.filter}
+                            value={state.loading ? "" : state.filter}
                             onChange={(e) => filter(e.target.value)}
                             disabled={state.loading}
                             className={classes.input}
                         >
-                            { state.locationFilterMapGrouped && [ 'all', ...LOCATIONS, ...ACTIVITIES ].filter((location) => {
+                            { state.locationFilterMapGrouped && filterOptions.filter((location) => {
                                 return location === 'all' || Object.keys(state.locationFilterMapGrouped[location]).length > 0;
                             }).map((location) => {
                                 return (

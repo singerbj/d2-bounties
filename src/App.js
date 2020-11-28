@@ -3,9 +3,10 @@ import axios from 'axios';
 import { DEFAULT_STATE, BUNGIE_APP_ID, API_KEY, TOKEN_URL, AUTHORIZE_URL, LOCATIONS, ACTIVITIES, WEAPONS, ELEMENTS, ENEMIES, ALL_KEYS } from './Constants';
 import ListView from './ListView';
 import {
-    BrowserRouter,
+    HashRouter,
     Route,
-    Redirect
+    Redirect,
+    Switch
 } from "react-router-dom";
 import { Button, LinearProgress, Grid, Paper, Typography } from '@material-ui/core';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -149,16 +150,17 @@ const App = () => {
             }
         }  
     };
-
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <BrowserRouter basename={(window.location.pathname !== '/' ? window.location.pathname : '') + "#"}>
-                <Route exact path="/filter/:filter">
-                    { getContentJsx() }
-                </Route>
-                <Redirect to='/filter/all' />
-            </BrowserRouter>
+            <HashRouter>
+                <Switch>
+                    <Route exact path={"/:filter"}>
+                        { getContentJsx() }
+                    </Route>
+                    <Redirect to='/all' />
+                </Switch>
+            </HashRouter>
         </ThemeProvider>
     );
 };

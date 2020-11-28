@@ -41,6 +41,15 @@ const getCharacter = async (membershipType, destinyMembershipId, characterId) =>
     })
 };
 
+// const getActivityHistory = async (membershipType, destinyMembershipId, characterId) => {
+//     return await axios.get(`https://www.bungie.net/Platform/Destiny2/${membershipType}/Account/${destinyMembershipId}/Character/${characterId}/Stats/Activities/?page=0`, {
+//         headers: {
+//             'X-API-Key': API_KEY,
+//             // 'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('access_token')).access_token,
+//         }
+//     })
+// };
+
 let manifestRes;
 let membershipRes;
 let inventoryItemDefinitionRes;
@@ -62,7 +71,7 @@ export const getData = async (setLoadingProgress, isOnPageRefresh) => {
     const inventoryItemDefinition = inventoryItemDefinitionRes.data;
     const mostRecentMembership = membershipRes.data.Response.destinyMemberships[0];
     const profileRes = await getProfile(mostRecentMembership.membershipType, mostRecentMembership.membershipId);
-    setLoadingProgress(95);
+    setLoadingProgress(90);
     const firstCharacterId = Object.keys(profileRes.data.Response.characters.data)[0];
     const firstCharacter = await getCharacter(mostRecentMembership.membershipType, mostRecentMembership.membershipId, firstCharacterId);
 

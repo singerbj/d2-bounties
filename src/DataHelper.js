@@ -244,7 +244,7 @@ export const getData = async (setLoadingProgress, isOnPageRefresh) => {
                         } else if(detailedKeyA.length > detailedKeyB.length) {
                             delete detailedMap[detailedKeyA];
                         } else {
-                            // you should never get here
+                            // should never get here
                         }
                     }
                 }

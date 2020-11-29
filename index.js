@@ -5,10 +5,10 @@ const createWindow = () => {
         callback({
             responseHeaders: {
                 ...details.responseHeaders,
-                'Content-Security-Policy': ['*']
-            }
-        })
-    })
+                'Content-Security-Policy': ['*'],
+            },
+        });
+    });
 
     const win = new BrowserWindow({
         width: 800,
@@ -16,12 +16,10 @@ const createWindow = () => {
         webPreferences: {
             nodeIntegration: true,
             webSecurity: false,
-            allowRunningInsecureContent: true
-        }
+            allowRunningInsecureContent: true,
+        },
     });
     win.loadFile('./dist/index.html');
 };
-
-
 
 app.whenReady().then(createWindow);

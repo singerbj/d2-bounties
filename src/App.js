@@ -2,27 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import { HashRouter, Route, Redirect, Switch } from 'react-router-dom';
-import {
-    Button,
-    LinearProgress,
-    Grid,
-    Paper,
-    Typography,
-} from '@material-ui/core';
-import {
-    createMuiTheme,
-    ThemeProvider,
-    makeStyles,
-} from '@material-ui/core/styles';
+import { Button, LinearProgress, Grid, Paper, Typography } from '@material-ui/core';
+import { createMuiTheme, ThemeProvider, makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import {
-    VERSION,
-    DEFAULT_STATE,
-    BUNGIE_APP_ID,
-    API_KEY,
-    TOKEN_URL,
-    AUTHORIZE_URL,
-} from './Constants';
+import { VERSION, DEFAULT_STATE, BUNGIE_APP_ID, API_KEY, TOKEN_URL, AUTHORIZE_URL } from './Constants';
 import ListView from './ListView';
 
 // print out the version
@@ -31,10 +14,7 @@ console.log(`d2-bounties version: ${VERSION}`);
 
 const createFormParams = (params) =>
     Object.keys(params)
-        .map(
-            (key) =>
-                `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
-        )
+        .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
         .join('&');
 
 const getToken = async () => {
@@ -59,11 +39,7 @@ if (!code) {
     code = urlParams.get('code');
 }
 if (window.location.search !== '') {
-    window.history.pushState(
-        'd2-bounties',
-        'd2-bounties',
-        window.location.origin + window.location.pathname
-    );
+    window.history.pushState('d2-bounties', 'd2-bounties', window.location.origin + window.location.pathname);
 }
 
 const useStyles = makeStyles((theme) => {
@@ -127,10 +103,7 @@ const App = () => {
                 try {
                     if (!localStorage.getItem('access_token')) {
                         const { data } = await getToken();
-                        localStorage.setItem(
-                            'access_token',
-                            JSON.stringify({ ...data })
-                        );
+                        localStorage.setItem('access_token', JSON.stringify({ ...data }));
                     }
                     setState({
                         ...state,
@@ -157,30 +130,14 @@ const App = () => {
             jsxToReturn = <ListView logout={logout} />;
         } else {
             jsxToReturn = (
-                <Grid
-                    container
-                    spacing={0}
-                    align="center"
-                    justify="center"
-                    direction="column"
-                    className={classes.grid}
-                >
+                <Grid container spacing={0} align="center" justify="center" direction="column" className={classes.grid}>
                     <Grid item>
                         <Paper className={classes.paper}>
                             <Typography variant="h2">d2-bounties</Typography>
-                            <Button
-                                className={classes.button}
-                                size="large"
-                                color="primary"
-                                variant="contained"
-                                onClick={() => login()}
-                            >
+                            <Button className={classes.button} size="large" color="primary" variant="contained" onClick={() => login()}>
                                 Login
                             </Button>
-                            <Typography variant="body2">
-                                d2-bounties requires you securely authenticate
-                                with Bungie.net every 30 minutes
-                            </Typography>
+                            <Typography variant="body2">d2-bounties requires you securely authenticate with Bungie.net every 30 minutes</Typography>
                         </Paper>
                     </Grid>
                 </Grid>
@@ -194,6 +151,9 @@ const App = () => {
             <HashRouter>
                 <Switch>
                     <Route exact path="/:filter">
+                        {getContentJsx()}
+                    </Route>
+                    <Route exact path="/:filter/:characterId">
                         {getContentJsx()}
                     </Route>
                     <Redirect to="/all" />

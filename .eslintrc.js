@@ -49,7 +49,7 @@ module.exports = {
         ],
         'comma-dangle': [0, 'never'],
         'no-cond-assign': [2, 'except-parens'],
-        'no-console': 2,
+        'no-console': 1,
         'no-debugger': 2,
         'no-alert': 1,
         'no-constant-condition': 1,

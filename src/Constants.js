@@ -1,4 +1,4 @@
-const VERSION = '0.1.1';
+const VERSION = '0.1.2';
 
 const DEFAULT_STATE = { loading: true };
 const BUNGIE_APP_ID = '34694';
@@ -6,24 +6,8 @@ const API_KEY = '8961c5b112cf48388a50dda77e6e1eee';
 const TOKEN_URL = 'https://www.bungie.net/Platform/App/OAuth/token/';
 const AUTHORIZE_URL = `https://www.bungie.net/en/OAuth/Authorize?client_id=${BUNGIE_APP_ID}&response_type=code`;
 
-const LOCATIONS = [
-    'edz',
-    'luna',
-    'europa',
-    'dreaming_city',
-    'cosmodrome',
-    'nessus',
-    'tangled_shore',
-];
-const ACTIVITIES = [
-    'raid',
-    'crucible',
-    'gambit',
-    'strike',
-    'patrol',
-    'lost_sector',
-    'trials',
-];
+const LOCATIONS = ['edz', 'luna', 'europa', 'dreaming_city', 'cosmodrome', 'nessus', 'tangled_shore'];
+const ACTIVITIES = ['raid', 'crucible', 'gambit', 'strike', 'patrol', 'lost_sector', 'trials'];
 const PVP_ONLY_ACTIVITIES = ['crucible', 'trials'];
 const WEAPONS = [
     'hand_cannon',
@@ -51,14 +35,7 @@ const WEAPONS = [
 const ALL_ELEMENTAL = ['elemental'];
 const ELEMENTS = ['solar', 'arc', 'void', 'stasis']; // stasis?
 const ENEMIES = ['fallen', 'scorn', 'cabal', 'hive', 'vex'];
-const ALL_KEYS = [
-    ...LOCATIONS,
-    ...WEAPONS,
-    ...ALL_ELEMENTAL,
-    ...ELEMENTS,
-    ...ACTIVITIES,
-    ...ENEMIES,
-];
+const ALL_KEYS = [...LOCATIONS, ...WEAPONS, ...ALL_ELEMENTAL, ...ELEMENTS, ...ACTIVITIES, ...ENEMIES];
 
 const MAX_LIST_LENGTH = 30;
 const MAX_ALL_LENGTH = 5;
@@ -98,6 +75,13 @@ const WHERE = {
     trials: `in ${LOCALE.trials}`,
 };
 
+const GUARDIAN_TYPES = {
+    0: 'Titan',
+    1: 'Hunter',
+    2: 'Warlock',
+    3: 'Unknown',
+};
+
 export {
     VERSION,
     LOCALE,
@@ -117,4 +101,5 @@ export {
     ALL_KEYS,
     MAX_LIST_LENGTH,
     MAX_ALL_LENGTH,
+    GUARDIAN_TYPES,
 };

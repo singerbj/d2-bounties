@@ -6,7 +6,7 @@ const API_KEY = '8961c5b112cf48388a50dda77e6e1eee';
 const TOKEN_URL = 'https://www.bungie.net/Platform/App/OAuth/token/';
 const AUTHORIZE_URL = `https://www.bungie.net/en/OAuth/Authorize?client_id=${BUNGIE_APP_ID}&response_type=code`;
 
-const LOCATIONS = ['edz', 'luna', 'europa', 'dreaming_city', 'cosmodrome', 'nessus', 'tangled_shore'];
+const LOCATIONS = ['edz', 'luna', 'europa', 'dreaming_city', 'cosmodrome', 'nessus', 'tangled_shore', 'throne_world'];
 const ACTIVITIES = ['raid', 'crucible', 'gambit', 'strike', 'patrol', 'lost_sector', 'trials'];
 const PVP_ONLY_ACTIVITIES = ['crucible', 'trials'];
 const WEAPONS = [
@@ -31,6 +31,7 @@ const WEAPONS = [
     'super',
     'precision',
     'finisher',
+    'glaive',
 ];
 const ALL_ELEMENTAL = ['elemental'];
 const ELEMENTS = ['solar', 'arc', 'void', 'stasis']; // stasis?
@@ -56,6 +57,7 @@ const LOCALE = {
     patrol: 'Patrol',
     lost_sector: 'Lost Sector',
     trials: 'Trials',
+    throne_world: 'Throne World',
 };
 
 const WHERE = {
@@ -73,6 +75,7 @@ const WHERE = {
     patrol: `while on ${LOCALE.patrol}s`,
     lost_sector: `in ${LOCALE.lost_sector}s`,
     trials: `in ${LOCALE.trials}`,
+    throne_world: `in the ${LOCALE.throne_world}`,
 };
 
 const GUARDIAN_TYPES = {
